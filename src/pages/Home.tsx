@@ -13,13 +13,7 @@ const Home = () => {
                 </button>
             </Link>
 
-            <Link to="/image-resizer">
-                <button className="min-w-[200px] bg-blue-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-blue-700">
-
-                    <LiaImagesSolid className="inline mr-2" size={24} />
-                    <span>image Resizer</span>
-                </button>
-            </Link>
+        
 
             <Link to="/html-to-pdf">
                 <button className="min-w-[200px]  bg-green-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-green-700">
@@ -34,6 +28,22 @@ const Home = () => {
 
                     <LiaImagesSolid className="inline mr-2" size={24} />
                     <span>QR Code Generator</span>
+                </button>
+            </Link>
+
+            <Link to="/yt-downloader">
+                <button className="min-w-[200px]  bg-purple-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-purple-700">
+
+                    <LiaImagesSolid className="inline mr-2" size={24} />
+                    <span>Youtube Downloader</span>
+                </button>
+            </Link>
+
+            <Link to="/image-editor">
+                <button className="min-w-[200px]  bg-yellow-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-yellow-700">
+
+                    <LiaImagesSolid className="inline mr-2" size={24} />
+                    <span>Image Editor</span>
                 </button>
             </Link>
 
