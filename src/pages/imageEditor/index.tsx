@@ -14,7 +14,7 @@ const FabricCanvas: React.FC = () => {
   const [blur, setBlur] = useState<number>(0)
   const [hue, setHue] = useState<number>(0)
 
-  const [gamma, setGamma] = useState<number[]>([1,1,1])
+  const [gamma, setGamma] = useState<number[]>([1, 1, 1])
 
   const [image, setImage] = useState<fabric.Image | null>(null);
 
@@ -65,8 +65,8 @@ const FabricCanvas: React.FC = () => {
     is_spia?: boolean,
     blur?: number,
     saturation?: number,
-    hue?:number,
-    gamma?:number[]
+    hue?: number,
+    gamma?: number[]
   ) => {
     if (image) {
       image.filters = [];
@@ -81,11 +81,11 @@ const FabricCanvas: React.FC = () => {
       const hueRotationFilter = new fabric.Image.filters.HueRotation({
         rotation: hue
       });
-      const gammaFilter =gamma && new fabric.Image.filters.Gamma({
+      const gammaFilter = gamma && new fabric.Image.filters.Gamma({
         gamma: [gamma[0], gamma[1], gamma[2]]
       })
 
-      
+
 
       image.filters[0] = brightnessFilter
       image.filters[1] = contrastFilter
@@ -95,8 +95,8 @@ const FabricCanvas: React.FC = () => {
       image.filters[5] = pixlateFilter
       image.filters[6] = blurFilter
       image.filters[7] = saturationFilter
-      image.filters[8] = hueRotationFilter   
-      if(gammaFilter) image.filters[9] = gammaFilter
+      image.filters[8] = hueRotationFilter
+      if (gammaFilter) image.filters[9] = gammaFilter
 
 
       image.applyFilters();
@@ -116,53 +116,53 @@ const FabricCanvas: React.FC = () => {
   const handleBrightnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setBrightness(value);
-    applyFilters(isInvert, isGrayScale, value, contrast, pixlate, isSpia, blur, saturation, hue);
+    applyFilters(isInvert, isGrayScale, value, contrast, pixlate, isSpia, blur, saturation, hue, gamma);
   };
 
   const handleContrastChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setContrast(value);
-    applyFilters(isInvert, isGrayScale, brightness, value, pixlate, isSpia, blur, saturation, hue);
+    applyFilters(isInvert, isGrayScale, brightness, value, pixlate, isSpia, blur, saturation, hue, gamma);
   };
 
   const handlePixlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setPixlate(value);
-    applyFilters(isInvert, isGrayScale, brightness, contrast, value, isSpia, blur, saturation, hue);
+    applyFilters(isInvert, isGrayScale, brightness, contrast, value, isSpia, blur, saturation, hue, gamma);
   }
 
   const handleBlurChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setBlur(value);
-    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, value, saturation, hue);
+    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, value, saturation, hue, gamma);
 
   }
 
   const handleSaturationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setSaturation(value);
-    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, value, hue);
+    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, value, hue, gamma);
   }
 
   const handleHueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setHue(value);
-    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, value);
+    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, value, gamma);
   }
 
   const applyInvert = (str: string) => {
     let invertValue = setterFun(setIsInvert, str)
-    applyFilters(!invertValue, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue);
+    applyFilters(!invertValue, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, gamma);
   }
 
   const applyGrayScale = (str: string) => {
     let grayScaleValue = setterFun(setIsGrayScale, str)
-    applyFilters(isInvert, !grayScaleValue, brightness, contrast, pixlate, isSpia, blur, saturation, hue)
+    applyFilters(isInvert, !grayScaleValue, brightness, contrast, pixlate, isSpia, blur, saturation, hue, gamma)
   }
 
   const applySpia = (str: string) => {
     let spiaValue = setterFun(setIsSpia, str)
-    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, !spiaValue, blur, saturation, hue)
+    applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, !spiaValue, blur, saturation, hue, gamma)
   }
 
 
@@ -218,7 +218,7 @@ const FabricCanvas: React.FC = () => {
           className="block w-full cursor-pointer"
         />
 
-<label className="block mb-2">
+        <label className="block mb-2">
           Hue:
 
         </label>
@@ -318,44 +318,47 @@ const FabricCanvas: React.FC = () => {
         </div>
 
         <label className='block'>Gamma: </label>
-        <input 
-        className='block w-full'
-        type="range"
-        min="0.01"
-        max="2.2"
-        step="0.01"
-        value={gamma[0]}
-        onChange={(e)=>{gamma[0] = parseFloat(e.target.value); setGamma([...gamma]);
-          applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [parseFloat(e.target.value), gamma[1], gamma[2]]);
+        <input
+          className='block w-full'
+          type="range"
+          min="0.01"
+          max="2.2"
+          step="0.01"
+          value={gamma[0]}
+          onChange={(e) => {
+            gamma[0] = parseFloat(e.target.value); setGamma([...gamma]);
+            applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [parseFloat(e.target.value), gamma[1], gamma[2]]);
 
 
-           }}
+          }}
         />
-         <input 
-        className='block w-full mt-2'
-        type="range"
-        min="0.01"
-        max="2.2"
-        step="0.01"
-        value={gamma[1]}
-        onChange={(e)=>{gamma[1] = parseFloat(e.target.value); setGamma([...gamma]);
-          applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [gamma[0], parseFloat(e.target.value), gamma[2]]);
+        <input
+          className='block w-full mt-2'
+          type="range"
+          min="0.01"
+          max="2.2"
+          step="0.01"
+          value={gamma[1]}
+          onChange={(e) => {
+            gamma[1] = parseFloat(e.target.value); setGamma([...gamma]);
+            applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [gamma[0], parseFloat(e.target.value), gamma[2]]);
 
 
-           }}
+          }}
         />
-         <input 
-        className='block w-full mt-2'
-        type="range"
-        min="0.01"
-        max="2.2"
-        step="0.01"
-        value={gamma[2]}
-        onChange={(e)=>{gamma[2] = parseFloat(e.target.value); setGamma([...gamma]);
-          applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [gamma[0], gamma[1], parseFloat(e.target.value)]);
+        <input
+          className='block w-full mt-2'
+          type="range"
+          min="0.01"
+          max="2.2"
+          step="0.01"
+          value={gamma[2]}
+          onChange={(e) => {
+            gamma[2] = parseFloat(e.target.value); setGamma([...gamma]);
+            applyFilters(isInvert, isGrayScale, brightness, contrast, pixlate, isSpia, blur, saturation, hue, [gamma[0], gamma[1], parseFloat(e.target.value)]);
 
 
-           }}
+          }}
         />
 
         <button
