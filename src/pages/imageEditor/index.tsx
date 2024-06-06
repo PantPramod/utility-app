@@ -182,16 +182,29 @@ const FabricCanvas: React.FC = () => {
     }
   }
 
-  const saveFile = () => {
 
+  const saveFile=()=>{
+    if (image) {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
 
-    var link = document.createElement('a');
-    link.download = 'filename.png';
-    if (canvasRef.current) {
-      link.href = canvasRef.current?.toDataURL()
-      link.click();
+      if (tempCtx) {
+        tempCanvas.width = image.getScaledWidth();
+        tempCanvas.height = image.getScaledHeight();
+        
+        const imgElement = new Image();
+        //@ts-ignore
+        imgElement.src = image.toDataURL();
+
+        imgElement.onload = () => {
+          tempCtx.drawImage(imgElement, 0, 0);
+          const link = document.createElement('a');
+          link.download = 'image.png';
+          link.href = tempCanvas.toDataURL();
+          link.click();
+        };
+      }
     }
-
 
   }
 
