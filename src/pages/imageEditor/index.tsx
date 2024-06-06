@@ -148,6 +148,7 @@ const FabricCanvas: React.FC = () => {
       image.filters[8] = hueRotationFilter
       image.filters[9] = gammaFilter
       image.applyFilters();
+      setImage(image)
       canvas?.renderAll();
     }
   }
@@ -271,7 +272,7 @@ const FabricCanvas: React.FC = () => {
           </div>
         }
 
-        <canvas ref={canvasRef} className="w-full border border-red-500" />
+        <canvas ref={canvasRef} className="w-full border" />
 
 
 
