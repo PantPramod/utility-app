@@ -52,18 +52,16 @@ const FabricCanvas: React.FC = () => {
   })
 
 
-  useEffect(() => {
 
+  useEffect(() => {
     if (canvasRef.current) {
       const initCanvas = new fabric.Canvas(canvasRef.current, {
+        width: 360,
         height: 550,
-        width: 390,
         backgroundColor: '#ffffff',
       });
       setCanvas(initCanvas);
     }
-
-
   }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,9 +72,18 @@ const FabricCanvas: React.FC = () => {
       reader.onload = (f) => {
         if (f.target && f.target.result && typeof f.target.result === 'string') {
           fabric.Image.fromURL(f.target.result, (img) => {
-            img.scaleToWidth(400);
+            // img.centeredScaling(true)
+
+            img.scaleToWidth(360);
+
+            img.scaleToHeight(550)
+
             canvas?.clear();
             canvas?.add(img);
+
+            img.center();
+            img.setCoords();
+
             setImage(img);
           });
         }
@@ -247,7 +254,7 @@ const FabricCanvas: React.FC = () => {
           </div>
         }
 
-        <canvas ref={canvasRef} className="w-full" />
+        <canvas ref={canvasRef} className="w-full border border-red-500" />
 
 
 
