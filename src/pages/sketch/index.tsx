@@ -1,62 +1,77 @@
+// src/DrawingCanvas.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
 import { SketchPicker } from 'react-color';
-import 'tailwindcss/tailwind.css';
 
 const DrawingCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvas, setCanvas] = useState<fabric.Canvas>();
-  const [activeTool, setActiveTool] = useState('pencil');
-  const [color, setColor] = useState('#000000');
-  const [lineWidth, setLineWidth] = useState(5);
-  const [isDashed, setIsDashed] = useState(false);
-  const [isFilled, setIsFilled] = useState(false);
-  const [text, setText] = useState('');
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+  const [activeTool, setActiveTool] = useState<string>('pencil');
+  const [color, setColor] = useState<string>('#000000');
+  const [lineWidth, setLineWidth] = useState<number>(5);
+  const [isDashed, setIsDashed] = useState<boolean>(false);
+  const [text, setText] = useState<string>('');
+  const [isFilled, setIsFilled] = useState<boolean>(false);
 
   useEffect(() => {
-    const initCanvas = new fabric.Canvas(canvasRef.current!, {
-      isDrawingMode: true,
-    });
-    setCanvas(initCanvas);
+    if (canvasRef.current) {
+      const fabricCanvas = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: true,
+      });
+      setCanvas(fabricCanvas);
 
-    return () => {
-      initCanvas.dispose();
-    };
+      return () => {
+        fabricCanvas.dispose();
+      };
+    }
   }, []);
 
   useEffect(() => {
-    if (!canvas) return;
+    if (canvas) {
+      canvas.isDrawingMode = activeTool === 'pencil' || activeTool === 'brush';
+      canvas.selection = activeTool === 'select';
+      canvas.defaultCursor = activeTool === 'select' ? 'default' : 'crosshair';
 
-    canvas.isDrawingMode = activeTool === 'pencil' || activeTool === 'brush' || activeTool === 'eraser';
+      canvas.forEachObject((obj) => {
+        obj.selectable = activeTool === 'select';
+      });
 
-    switch (activeTool) {
-      case 'pencil':
-        setupPencil();
-        break;
-      case 'brush':
-        setupBrush();
-        break;
-      case 'line':
-        setupLine();
-        break;
-      case 'rectangle':
-        setupRectangle();
-        break;
-      case 'circle':
-        setupCircle();
-        break;
-      case 'polygon':
-        setupPolygon();
-        break;
-      case 'eraser':
-        setupEraser();
-        break;
-      case 'text':
-        break;
-      default:
-        break;
+      canvas.off('mouse:down');
+      canvas.off('mouse:move');
+      canvas.off('mouse:up');
+      canvas.off('mouse:dblclick');
+
+      switch (activeTool) {
+        case 'pencil':
+          setupPencil();
+          break;
+        case 'brush':
+          setupBrush();
+          break;
+        case 'line':
+          setupLine();
+          break;
+        case 'rectangle':
+          setupRectangle();
+          break;
+        case 'circle':
+          setupCircle();
+          break;
+        case 'polygon':
+          setupPolygon();
+          break;
+        case 'eraser':
+          setupEraser();
+          break;
+        case 'text':
+          canvas.isDrawingMode = false;
+          break;
+        default:
+          canvas.isDrawingMode = false;
+          break;
+      }
     }
-  }, [activeTool, color, lineWidth, isDashed, isFilled]);
+  }, [canvas, activeTool, color, lineWidth, isDashed, isFilled]);
 
   const handleToolChange = (tool: string) => {
     setActiveTool(tool);
@@ -103,7 +118,6 @@ const DrawingCanvas: React.FC = () => {
   const setupLine = () => {
     let isDrawing = false;
     let line: fabric.Line;
-
     canvas?.on('mouse:down', (opt) => {
       if (canvas) {
         isDrawing = true;
@@ -135,7 +149,6 @@ const DrawingCanvas: React.FC = () => {
   const setupRectangle = () => {
     let isDrawing = false;
     let rect: fabric.Rect;
-
     canvas?.on('mouse:down', (opt) => {
       if (canvas) {
         isDrawing = true;
@@ -180,7 +193,6 @@ const DrawingCanvas: React.FC = () => {
   const setupCircle = () => {
     let isDrawing = false;
     let circle: fabric.Circle;
-
     canvas?.on('mouse:down', (opt) => {
       if (canvas) {
         isDrawing = true;
@@ -219,7 +231,6 @@ const DrawingCanvas: React.FC = () => {
   const setupPolygon = () => {
     let points: { x: number; y: number }[] = [];
     let polygon: fabric.Polygon;
-
     canvas?.on('mouse:down', (opt) => {
       if (canvas) {
         const pointer = canvas.getPointer(opt.e);
@@ -234,8 +245,8 @@ const DrawingCanvas: React.FC = () => {
               strokeDashArray: isDashed ? [5, 5] : undefined,
             });
             canvas.add(polygon);
-          } else {
-            //@ts-ignore
+          } else {//@ts-ignore
+
             polygon.set({ points: points });
             canvas.renderAll();
           }
@@ -249,14 +260,6 @@ const DrawingCanvas: React.FC = () => {
     });
   };
 
-  const setupEraser = () => {
-    if (canvas) {
-      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-      canvas.freeDrawingBrush.width = lineWidth;
-      canvas.freeDrawingBrush.color = '#FFFFFF'; // assuming white background
-    }
-  };
-
   const handleSaveImage = () => {
     if (canvas) {
       const dataURL = canvas.toDataURL({
@@ -267,6 +270,14 @@ const DrawingCanvas: React.FC = () => {
       link.href = dataURL;
       link.download = 'canvas.png';
       link.click();
+    }
+  };
+
+  const setupEraser = () => {
+    if (canvas) {
+      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+      canvas.freeDrawingBrush.width = lineWidth;
+      canvas.freeDrawingBrush.color = '#FFFFFF'; // assuming white background
     }
   };
 
@@ -283,38 +294,59 @@ const DrawingCanvas: React.FC = () => {
           <button onClick={() => handleToolChange('eraser')} className="p-2 bg-blue-500 text-white rounded">Eraser</button>
           <button onClick={() => handleToolChange('text')} className="p-2 bg-blue-500 text-white rounded">Text</button>
           <button onClick={handleClear} className="p-2 bg-red-500 text-white rounded">Clear</button>
-          <button onClick={handleSaveImage} className="p-2 bg-green-500 text-white rounded">Save</button>
+          <button onClick={handleSaveImage} className="p-2 bg-green-500 text-white rounded">Save Image</button>
         </div>
         <div className="mt-4">
           <SketchPicker color={color} onChangeComplete={(color) => setColor(color.hex)} />
         </div>
-        <div className="mt-4">
-          <label className="block">Line Width</label>
-          <input type="range" min="1" max="50" value={lineWidth} onChange={(e) => setLineWidth(parseInt(e.target.value))} />
-        </div>
-        <div className="mt-4">
-          <label className="block">Dashed</label>
-          <input type="checkbox" checked={isDashed} onChange={() => setIsDashed(!isDashed)} />
-        </div>
-        {activeTool === 'rectangle' || activeTool === 'circle' || activeTool === 'polygon' ? (
+        {activeTool === 'pencil' && (
           <div className="mt-4">
-            <label className="block">Filled</label>
-            <input type="checkbox" checked={isFilled} onChange={() => setIsFilled(!isFilled)} />
+            <label className="block">Pencil Width</label>
+            <input
+              type="range"
+              min="1"
+              max="50"
+              value={lineWidth}
+              onChange={(e) => setLineWidth(parseInt(e.target.value))}
+              className="w-full"
+            />
+            <label className="block mt-2">Dashed</label>
+            <input
+              type="checkbox"
+              checked={isDashed}
+              onChange={(e) => setIsDashed(e.target.checked)}
+            />
           </div>
-        ) : null}
-        {activeTool === 'text' ? (
+        )}
+        {['rectangle', 'circle', 'polygon'].includes(activeTool) && (
+          <div className="mt-4">
+            <label className="block mt-2">Filled</label>
+            <input
+              type="checkbox"
+              checked={isFilled}
+              onChange={(e) => setIsFilled(e.target.checked)}
+            />
+          </div>
+        )}
+        {activeTool === 'text' && (
           <div className="mt-4">
             <label className="block">Text</label>
-            <input type="text" value={text} onChange={(e) => setText(e.target.value)} className="p-2 border rounded" />
-            <button onClick={handleAddText} className="mt-2 p-2 bg-blue-500 text-white rounded">Add Text</button>
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <button onClick={handleAddText} className="mt-2 p-2 bg-green-500 text-white rounded">Add Text</button>
           </div>
-        ) : null}
+        )}
       </div>
-      <div className="w-full md:w-3/4 h-full">
-        <canvas ref={canvasRef} className="w-full h-full border"  width={800} height={600}></canvas>
+      <div className="flex-grow flex items-center justify-center p-2">
+        <canvas ref={canvasRef} width={800} height={600} className="border border-black w-full max-w-full" />
       </div>
     </div>
   );
 };
 
 export default DrawingCanvas;
+
