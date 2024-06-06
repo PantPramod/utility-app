@@ -13,7 +13,7 @@ const Home = () => {
                 </button>
             </Link>
 
-        
+
 
             <Link to="/html-to-pdf">
                 <button className="min-w-[200px]  bg-green-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-green-700">
@@ -31,11 +31,11 @@ const Home = () => {
                 </button>
             </Link>
 
-            <Link to="/yt-downloader">
+            <Link to="/sketch">
                 <button className="min-w-[200px]  bg-purple-600 text-white rounded-full p-4 shadow-md uppercase hover:bg-purple-700">
 
                     <LiaImagesSolid className="inline mr-2" size={24} />
-                    <span>Youtube Downloader</span>
+                    <span>Sketch</span>
                 </button>
             </Link>
 
@@ -46,6 +46,7 @@ const Home = () => {
                     <span>Image Editor</span>
                 </button>
             </Link>
+
 
 
 

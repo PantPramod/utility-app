@@ -6,6 +6,8 @@ import HtmlToPdf from "./pages/HtmlToPdf";
 import QRCodeGenerator from "./pages/QRCodeGenerator";
 import YoutubeDownloader from "./pages/YoutubeDownloader";
 import ImageEditor from './pages/imageEditor'
+import Sketch from "./pages/sketch";
+
 const App = () => {
   return (<>
     <BrowserRouter>
@@ -16,6 +18,7 @@ const App = () => {
         <Route element={<QRCodeGenerator/>} path="/qr-code-generator" />
         <Route element={<YoutubeDownloader/>} path="/yt-downloader"/>
         <Route element={<ImageEditor/>} path="/image-editor"/>
+        <Route element={<Sketch/>} path="/sketch"/>
       </Routes>
     </BrowserRouter>
   </>
