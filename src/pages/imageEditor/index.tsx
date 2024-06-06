@@ -84,6 +84,16 @@ const FabricCanvas: React.FC = () => {
             img.center();
             img.setCoords();
 
+            img.set({
+              lockMovementX: true,
+              lockMovementY: true,
+              lockScalingX: true,
+              lockScalingY: true,
+              lockRotation: true,
+              selectable: false,
+              evented: false
+            });
+            
             setImage(img);
           });
         }
@@ -140,13 +150,7 @@ const FabricCanvas: React.FC = () => {
       image.applyFilters();
       canvas?.renderAll();
     }
-  };
-
-
-
-
-
-
+  }
 
 
   function handleValueChange(val: string, setValue: any, item: filterType, type: "boolean" | "number") {
