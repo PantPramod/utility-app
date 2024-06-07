@@ -21,6 +21,7 @@ const DrawingCanvas: React.FC = () => {
     if (canvasRef.current) {
       const fabricCanvas = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: true,
+        backgroundColor:"white"
       });
       setCanvas(fabricCanvas);
 
